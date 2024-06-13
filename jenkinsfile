@@ -2,36 +2,40 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE_SERVER = 'Sonar-Qube-Scanner'
+        SONARQUBE_SERVER = 'Sonar-Qube-Server' // The name of your SonarQube installation
+        SCANNER_HOME = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation' // Ensure this matches the name of your SonarQube Scanner installation
     }
 
     stages {
-        stage('Clean workspace') {
+        stage('Checkout') {
             steps {
-                cleanWs()
+                git 'https://github.com/devopscoacht/youtube-clone'
             }
         }
 
-        stage('Checkout from Git') {
-            steps {
-                git branch: 'main', url: 'https://github.com/devopscoacht/youtube-clone'
-            }
-        }
-
-        stage('Sonarqube Analysis') {
+        stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('Sonar-Qube-Server') {
-                    sh "${SCANNER_HOME}/bin/sonar-scanner"
+                    sh "${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=your_project_key"
                 }
             }
         }
 
         stage('Quality Gate') {
             steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
+                script {
+                    def qg = waitForQualityGate()
+                    if (qg.status != 'OK') {
+                        error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                    }
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }
