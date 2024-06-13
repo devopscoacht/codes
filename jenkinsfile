@@ -14,7 +14,7 @@ pipeline {
 
         stage('Checkout from Git') {
             steps {
-                git branch: 'main', url: 'https://github.com/ArmstrongLiwox/a-youtube-clone-app'
+                git branch: 'main', url: 'https://github.com/devopscoacht/youtube-clone'
             }
         }
 
