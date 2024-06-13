@@ -7,8 +7,8 @@ pipeline {
                 script {
                     withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker') {
                         sh 'docker build -t youtube-clone .'
-                        sh 'docker tag youtube-clone liwox/youtube-clone:latest'
-                        sh 'docker push liwox/youtube-clone:latest'
+                        sh 'docker tag youtube-clone devopscoacht/youtube-clone:latest'
+                        sh 'docker push devopscoacht/youtube-clone:latest'
                     }
                 }
             }
